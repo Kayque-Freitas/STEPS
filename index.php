@@ -31,18 +31,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $categoryName = sanitize($_POST['category_name'] ?? '');
             $categoryDesc = sanitize($_POST['category_desc'] ?? '');
 
-            if (empty($categoryName)) {
+            // Normalizar nome para evitar duplicatas por espaços
+            $normalizedName = normalize_category_name($categoryName);
+
+            if (empty($normalizedName)) {
                 $message = 'Nome da categoria é obrigatório.';
                 $messageType = 'danger';
             } else {
                 try {
                     $stmt = $pdo->prepare('INSERT INTO categories (name, description) VALUES (?, ?)');
-                    $stmt->execute([$categoryName, $categoryDesc]);
-                    $message = "Categoria '$categoryName' criada com sucesso!";
+                    $stmt->execute([$normalizedName, $categoryDesc]);
+                    $message = "Categoria '$normalizedName' criada com sucesso!";
                     $messageType = 'success';
-                    log_audit($_SESSION['user_id'], 'CREATE_CATEGORY', "Categoria '$categoryName' criada");
+                    log_audit($_SESSION['user_id'], 'CREATE_CATEGORY', "Categoria '$normalizedName' criada");
+                    
+                    // Recarregar categorias após inserção
+                    $categoriesStmt = $pdo->query('SELECT * FROM categories ORDER BY name ASC');
+                    $categories = $categoriesStmt->fetchAll(PDO::FETCH_ASSOC);
                 } catch (PDOException $e) {
-                    if (strpos($e->getMessage(), 'UNIQUE constraint failed') !== false) {
+                    if (strpos($e->getMessage(), 'UNIQUE constraint failed') !== false || strpos($e->getMessage(), 'Duplicate entry') !== false) {
                         $message = 'Essa categoria já existe.';
                     } else {
                         $message = 'Erro ao criar categoria.';
@@ -56,19 +63,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         elseif ($action === 'rename_category') {
             $categoryId = intval($_POST['category_id'] ?? 0);
             $newName = sanitize($_POST['new_name'] ?? '');
+            $normalizedNewName = normalize_category_name($newName);
 
-            if ($categoryId <= 0 || empty($newName)) {
+            if ($categoryId <= 0 || empty($normalizedNewName)) {
                 $message = 'Dados inválidos.';
                 $messageType = 'danger';
             } else {
                 try {
                     $stmt = $pdo->prepare('UPDATE categories SET name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?');
-                    $stmt->execute([$newName, $categoryId]);
+                    $stmt->execute([$normalizedNewName, $categoryId]);
                     $message = "Categoria renomeada com sucesso!";
                     $messageType = 'success';
-                    log_audit($_SESSION['user_id'], 'RENAME_CATEGORY', "Categoria $categoryId renomeada para '$newName'");
+                    log_audit($_SESSION['user_id'], 'RENAME_CATEGORY', "Categoria $categoryId renomeada para '$normalizedNewName'");
+                    
+                    // Recarregar categorias após atualização
+                    $categoriesStmt = $pdo->query('SELECT * FROM categories ORDER BY name ASC');
+                    $categories = $categoriesStmt->fetchAll(PDO::FETCH_ASSOC);
                 } catch (PDOException $e) {
-                    $message = 'Erro ao renomear categoria.';
+                    if (strpos($e->getMessage(), 'UNIQUE constraint failed') !== false || strpos($e->getMessage(), 'Duplicate entry') !== false) {
+                        $message = 'Já existe uma categoria com esse nome.';
+                    } else {
+                        $message = 'Erro ao renomear categoria.';
+                    }
                     $messageType = 'danger';
                 }
             }
@@ -97,6 +113,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $message = "Categoria deletada com sucesso!";
                         $messageType = 'success';
                         log_audit($_SESSION['user_id'], 'DELETE_CATEGORY', "Categoria $categoryId deletada");
+                        
+                        // Recarregar categorias após deleção
+                        $categoriesStmt = $pdo->query('SELECT * FROM categories ORDER BY name ASC');
+                        $categories = $categoriesStmt->fetchAll(PDO::FETCH_ASSOC);
                     }
                 } catch (Exception $e) {
                     $message = 'Erro ao deletar categoria.';
@@ -115,7 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 try {
                     // Obter informações do vídeo
-                    $stmt = $pdo->prepare('SELECT filename, thumbnail FROM videos WHERE id = ?');
+                    $stmt = $pdo->prepare('SELECT category_id, filename, thumbnail FROM videos WHERE id = ?');
                     $stmt->execute([$videoId]);
                     $video = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -124,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $messageType = 'danger';
                     } else {
                         // Deletar arquivo de vídeo
-                        $videoPath = UPLOAD_DIR . $video['filename'];
+                        $videoPath = UPLOAD_DIR . $video['category_id'] . '/' . $video['filename'];
                         if (file_exists($videoPath)) {
                             unlink($videoPath);
                         }
@@ -149,6 +169,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $message = 'Erro ao deletar vídeo.';
                     $messageType = 'danger';
                 }
+            }
+        }
+
+        // Limpar logs de auditoria
+        elseif ($action === 'clear_audit_logs') {
+            try {
+                $stmt = $pdo->prepare('DELETE FROM audit_logs');
+                $stmt->execute();
+                $message = "Logs de auditoria limpos com sucesso!";
+                $messageType = 'success';
+                // Não registrar no log para evitar loop
+            } catch (Exception $e) {
+                $message = 'Erro ao limpar logs de auditoria.';
+                $messageType = 'danger';
             }
         }
     }
@@ -457,6 +491,7 @@ $csrf_token = generate_csrf_token();
                                 <table class="table table-hover mb-0">
                                     <thead>
                                         <tr>
+                                            <th>ID</th>
                                             <th>Nome</th>
                                             <th>Descrição</th>
                                             <th>Criada em</th>
@@ -464,8 +499,10 @@ $csrf_token = generate_csrf_token();
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <?php $categoryCounter = 1; ?>
                                         <?php foreach ($categories as $category): ?>
                                             <tr>
+                                                <td><?php echo $categoryCounter++; ?></td>
                                                 <td><?php echo htmlspecialchars($category['name']); ?></td>
                                                 <td><?php echo htmlspecialchars($category['description'] ?? '-'); ?></td>
                                                 <td><?php echo date('d/m/Y', strtotime($category['created_at'])); ?></td>
@@ -621,6 +658,15 @@ $csrf_token = generate_csrf_token();
                     <div class="tab-pane fade" id="auditoria">
                         <h2 class="mb-4">Log de Auditoria</h2>
                         <div class="card">
+                            <div class="card-header">
+                                <form method="post" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                                    <input type="hidden" name="action" value="clear_audit_logs">
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja apagar todos os logs de auditoria? Esta ação não pode ser desfeita.')">
+                                        <i class="bi bi-trash"></i> Apagar Todos os Logs
+                                    </button>
+                                </form>
+                            </div>
                             <div class="table-responsive">
                                 <table class="table table-hover mb-0">
                                     <thead>

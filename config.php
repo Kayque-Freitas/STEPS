@@ -3,25 +3,50 @@
  * Sistema de Tutoriais e POP's - Configuração
  * Versão: 2.0 (Revisada)
  * 
- * Arquivo de configuração centralizado com suporte a banco de dados SQLite
+ * Arquivo de configuração centralizado com suporte a banco de dados MySQL
  */
 
 // ============================================================================
 // CONFIGURAÇÕES BÁSICAS
 // ============================================================================
 
+// Função para obter o IP local da máquina
+function getLocalIP() {
+    // Fallback para gethostbyname
+    $hostname = gethostname();
+    $ip = gethostbyname($hostname);
+    if ($ip != '127.0.0.1' && strpos($ip, '127.') !== 0) {
+        return $ip;
+    }
+    // Último fallback para ipconfig
+    $output = shell_exec('ipconfig');
+    if (preg_match('/(IPv4|Endereço IPv4)[^:]*:\s*([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/', $output, $matches)) {
+        return trim($matches[2]);
+    }
+    return 'localhost'; // fallback
+}
+
 // Tenta detectar a URL base automaticamente
 $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
 $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+if ($host == 'localhost' || $host == '127.0.0.1') {
+    $host = getLocalIP();
+}
 $scriptName = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+$scriptName = dirname($scriptName); // Para remover /api se estiver
 $baseUrl = $protocol . "://" . $host . ($scriptName == '/' ? '' : $scriptName) . "/";
 
 define('BASE_URL', $baseUrl);
 define('UPLOAD_DIR', __DIR__ . '/uploads/');
 define('THUMB_DIR', __DIR__ . '/thumbs/');
-define('DB_PATH', __DIR__ . '/data/database.db');
 define('DATA_DIR', __DIR__ . '/data/');
 define('QR_DIR', __DIR__ . '/qrcodes/');
+
+// Configurações do banco de dados MySQL
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+define('DB_NAME', 'sistema');
 
 // Configurações de segurança
 define('SESSION_TIMEOUT', 3600); // 1 hora em segundos
@@ -50,7 +75,8 @@ class Database {
 
     private function __construct() {
         try {
-            $this->pdo = new PDO('sqlite:' . DB_PATH);
+            $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
+            $this->pdo = new PDO($dsn, DB_USER, DB_PASS);
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->initializeTables();
         } catch (PDOException $e) {
@@ -73,56 +99,56 @@ class Database {
         // Tabela de usuários
         $this->pdo->exec("
             CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT UNIQUE NOT NULL,
-                password TEXT NOT NULL,
-                email TEXT,
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                username VARCHAR(150) UNIQUE NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                email VARCHAR(255),
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 last_login DATETIME
-            )
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
         ");
 
         // Tabela de categorias
         $this->pdo->exec("
             CREATE TABLE IF NOT EXISTS categories (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT UNIQUE NOT NULL,
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(150) UNIQUE NOT NULL,
                 description TEXT,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-            )
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
         ");
 
         // Tabela de vídeos
         $this->pdo->exec("
             CREATE TABLE IF NOT EXISTS videos (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                category_id INTEGER NOT NULL,
-                title TEXT NOT NULL,
-                filename TEXT NOT NULL,
-                thumbnail TEXT,
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                category_id INT NOT NULL,
+                title VARCHAR(255) NOT NULL,
+                filename VARCHAR(255) NOT NULL,
+                thumbnail VARCHAR(255),
                 description TEXT,
-                duration INTEGER,
-                file_size INTEGER,
-                views INTEGER DEFAULT 0,
+                duration INT,
+                file_size INT,
+                views INT DEFAULT 0,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
-            )
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
         ");
 
         // Tabela de logs de auditoria
         $this->pdo->exec("
             CREATE TABLE IF NOT EXISTS audit_logs (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER,
-                action TEXT NOT NULL,
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT,
+                action VARCHAR(255) NOT NULL,
                 description TEXT,
-                ip_address TEXT,
+                ip_address VARCHAR(45),
                 user_agent TEXT,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES users(id)
-            )
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
         ");
 
         // Inserir usuário padrão se não existir
@@ -150,6 +176,17 @@ class Database {
  */
 function sanitize($data) {
     return htmlspecialchars(strip_tags(trim($data)), ENT_QUOTES, 'UTF-8');
+}
+
+/**
+ * Normaliza nome de categoria para evitar duplicatas
+ * @param string $name Nome da categoria
+ * @return string Nome normalizado
+ */
+function normalize_category_name($name) {
+    // Remove espaços extras e normaliza
+    $normalized = preg_replace('/\s+/', ' ', trim($name));
+    return $normalized;
 }
 
 /**
