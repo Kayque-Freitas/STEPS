@@ -1,0 +1,23 @@
+# Configurações de Segurança Básicas
+# Nota: Se o seu servidor der Erro 500, tente comentar as linhas abaixo com #
+
+# Impedir listagem de diretórios
+Options -Indexes
+
+# Proteger o banco de dados e arquivos de configuração
+<FilesMatch "\.(db|sqlite|log|config)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Configurações de URL (Opcional)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Se o projeto estiver em uma subpasta, ajuste o RewriteBase
+    # RewriteBase /Sistema-de-Videos-POP-s-e-Tutoriais-De-Expedi-o/
+</IfModule>
