@@ -40,7 +40,7 @@ try {
 
     // Obter vídeos
     $stmt = $pdo->prepare('
-        SELECT id, title, filename, thumbnail, duration, file_size, views
+        SELECT id, title, filename, thumbnail, duration, file_size
         FROM videos
         WHERE category_id = ?
         ORDER BY created_at DESC

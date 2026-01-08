@@ -34,13 +34,9 @@ try {
         die('Vídeo não encontrado');
     }
 
-    // Incrementar visualizações
-    $updateStmt = $pdo->prepare('UPDATE videos SET views = views + 1 WHERE id = ?');
-    $updateStmt->execute([$videoId]);
-
     // Obter vídeos relacionados
     $relatedStmt = $pdo->prepare('
-        SELECT id, title, thumbnail, views
+        SELECT id, title, thumbnail
         FROM videos
         WHERE category_id = ? AND id != ?
         ORDER BY created_at DESC
@@ -63,6 +59,7 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title><?php echo htmlspecialchars($video['title']); ?> - Sistema de Tutoriais e POP's</title>
+    <link rel="icon" href="/favicon.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
@@ -192,6 +189,190 @@ try {
             margin-right: 0.5rem;
             margin-bottom: 0.5rem;
         }
+
+        /* ===== RESPONSIVO PARA CELULARES ===== */
+        @media (max-width: 768px) {
+            /* Navbar */
+            .navbar {
+                padding: 0.75rem 0;
+            }
+            .navbar-brand {
+                font-size: 1rem;
+            }
+
+            /* Container */
+            .container {
+                padding: 0 0.5rem;
+                max-width: 100%;
+            }
+
+            /* Vídeo */
+            .video-container {
+                margin-bottom: 1.5rem;
+                border-radius: 6px;
+            }
+
+            /* Info */
+            .video-info {
+                padding: 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .video-title {
+                font-size: 1.3rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .video-meta {
+                font-size: 0.85rem;
+                margin-bottom: 1rem;
+            }
+
+            .video-meta span {
+                display: block;
+                margin-right: 0;
+                margin-bottom: 0.5rem;
+            }
+
+            /* Botões Share */
+            .share-buttons {
+                margin-top: 1rem;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .share-buttons button {
+                flex: 1;
+                min-width: 100px;
+                margin: 0;
+                font-size: 0.85rem;
+                padding: 0.6rem 0.5rem;
+            }
+
+            /* QR Section */
+            .qr-section {
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .qr-section h5 {
+                font-size: 1rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .qr-code-img {
+                max-width: 150px;
+                margin: 0.75rem auto;
+            }
+
+            .qr-section .btn {
+                width: 100%;
+            }
+
+            /* Cards */
+            .card {
+                border-radius: 6px;
+                margin-bottom: 1.5rem;
+            }
+
+            .card-header {
+                padding: 0.75rem;
+                font-size: 0.95rem;
+            }
+
+            .card-body {
+                padding: 0.75rem;
+            }
+
+            /* Related Videos */
+            .related-video img {
+                height: 120px;
+            }
+
+            .related-video {
+                margin-bottom: 0.75rem;
+            }
+
+            /* Badge */
+            .badge {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Celulares Muito Pequenos (< 480px) */
+        @media (max-width: 480px) {
+            .navbar-brand {
+                font-size: 0.85rem;
+            }
+
+            .navbar {
+                padding: 0.5rem 0;
+            }
+
+            .video-title {
+                font-size: 1.1rem;
+            }
+
+            .video-meta {
+                font-size: 0.75rem;
+            }
+
+            .video-info {
+                padding: 0.75rem;
+            }
+
+            .share-buttons {
+                flex-direction: column;
+            }
+
+            .share-buttons button {
+                width: 100%;
+                flex: none;
+                margin-bottom: 0.5rem;
+            }
+
+            .qr-section {
+                padding: 1rem;
+            }
+
+            .qr-section h5 {
+                font-size: 0.9rem;
+            }
+
+            .qr-code-img {
+                max-width: 120px;
+            }
+
+            .card-header {
+                font-size: 0.85rem;
+            }
+
+            .related-video img {
+                height: 100px;
+            }
+
+            .nav-link {
+                padding: 0.75rem 0.5rem !important;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Melhorias de Toque */
+        @media (hover: none) {
+            .btn, .card, .related-video {
+                -webkit-tap-highlight-color: rgba(102, 126, 234, 0.1);
+            }
+
+            .btn:active {
+                transform: scale(0.98);
+            }
+
+            .related-video:active {
+                transform: scale(0.98);
+            }
+        }
     </style>
 </head>
 <body>
@@ -224,12 +405,12 @@ try {
     </nav>
 
     <div class="container mt-4 mb-4">
-        <div class="row">
+        <div class="row g-3">
             <!-- Vídeo Principal -->
-            <div class="col-lg-8">
+            <div class="col-lg-8 col-12">
                 <!-- Reprodutor de Vídeo -->
                 <div class="video-container">
-                    <video controls preload="metadata" <?php if (!empty($video['thumbnail'])): ?>poster="<?php echo htmlspecialchars('thumbs/' . $video['thumbnail']); ?>"<?php endif; ?>>
+                    <video controls preload="metadata" style="width: 100%; height: auto;" <?php if (!empty($video['thumbnail'])): ?>poster="<?php echo htmlspecialchars('thumbs/' . $video['thumbnail']); ?>"<?php endif; ?>>
                         <source src="<?php echo htmlspecialchars('uploads/' . $video['category_id'] . '/' . $video['filename']); ?>" type="video/mp4">
                         Seu navegador não suporta reprodução de vídeo.
                     </video>
@@ -244,38 +425,35 @@ try {
                             <span class="badge bg-primary"><?php echo htmlspecialchars($video['category_name']); ?></span>
                         </span>
                         <span>
-                            <i class="bi bi-eye"></i>
-                            <?php echo number_format($video['views']); ?> visualizações
-                        </span>
-                        <span>
                             <i class="bi bi-calendar"></i>
                             <?php echo date('d/m/Y', strtotime($video['created_at'])); ?>
                         </span>
                     </div>
 
                     <!-- Botões de Compartilhamento -->
-                    <div class="share-buttons">
-                        <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard()">
+                    <div class="share-buttons d-grid gap-2">
+                        <button class="btn btn-outline-primary" onclick="copyToClipboard()">
                             <i class="bi bi-link-45deg"></i> Copiar Link
                         </button>
-                        <button class="btn btn-sm btn-outline-primary" onclick="shareWhatsApp()">
-                            <i class="bi bi-whatsapp"></i> WhatsApp
+                        <button class="btn btn-outline-primary" onclick="shareWhatsApp()">
+                            <i class="bi bi-whatsapp"></i> Compartilhar no WhatsApp
                         </button>
-                        <button class="btn btn-sm btn-outline-primary" onclick="shareFacebook()">
-                            <i class="bi bi-facebook"></i> Facebook
+                        <button class="btn btn-outline-primary" onclick="shareFacebook()">
+                            <i class="bi bi-facebook"></i> Compartilhar no Facebook
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Sidebar -->
-            <div class="col-lg-4">
+            <!-- Sidebar / Conteúdo Inferior em Mobile -->
+            <div class="col-lg-4 col-12">
                 <!-- QR Code -->
                 <div class="qr-section">
-                    <h5>Compartilhar via QR Code</h5>
-                    <img src="api/generate_qr.php?video_id=<?php echo $videoId; ?>&size=200" alt="QR Code" class="qr-code-img">
-                    <br>
-                    <a href="api/generate_qr.php?video_id=<?php echo $videoId; ?>&size=300" download="qr_<?php echo $videoId; ?>.png" class="btn btn-sm btn-primary">
+                    <h5><i class="bi bi-qr-code"></i> Compartilhar via QR Code</h5>
+                    <div style="text-align: center;">
+                        <img src="api/generate_qr.php?video_id=<?php echo $videoId; ?>&size=200" alt="QR Code" class="qr-code-img">
+                    </div>
+                    <a href="api/generate_qr.php?video_id=<?php echo $videoId; ?>&size=300" download="qr_<?php echo $videoId; ?>.png" class="btn btn-primary w-100" style="margin-top: 0.5rem;">
                         <i class="bi bi-download"></i> Baixar QR Code
                     </a>
                 </div>
@@ -285,31 +463,28 @@ try {
                     <div class="card-header">
                         <i class="bi bi-film"></i> Vídeos Relacionados
                     </div>
-                    <div class="card-body">
-                        <div class="row g-3">
+                    <div class="card-body p-0">
+                        <div class="d-grid gap-2">
                             <?php foreach ($relatedVideos as $related): ?>
-                                <div class="col-12">
-                                    <div class="related-video" onclick="window.location.href='watch.php?id=<?php echo $related['id']; ?>'">
-                                        <div style="position: relative; overflow: hidden; border-radius: 8px;">
-                                            <?php if (!empty($related['thumbnail'])): ?>
-                                                <img src="<?php echo htmlspecialchars('thumbs/' . $related['thumbnail']); ?>" alt="<?php echo htmlspecialchars($related['title']); ?>">
-                                            <?php else: ?>
-                                                <div style="width: 100%; height: 150px; background: #ddd; display: flex; align-items: center; justify-content: center;">
-                                                    <i class="bi bi-film" style="font-size: 2rem; color: #999;"></i>
-                                                </div>
-                                            <?php endif; ?>
-                                            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s;">
-                                                <i class="bi bi-play-circle" style="font-size: 2rem; color: white;"></i>
+                                <div class="related-video p-3" onclick="window.location.href='watch.php?id=<?php echo $related['id']; ?>' " style="cursor: pointer;">
+                                    <div style="position: relative; overflow: hidden; border-radius: 6px; margin-bottom: 0.5rem;">
+                                        <?php if (!empty($related['thumbnail'])): ?>
+                                            <img src="<?php echo htmlspecialchars('thumbs/' . $related['thumbnail']); ?>" alt="<?php echo htmlspecialchars($related['title']); ?>" style="width: 100%; height: 120px; object-fit: cover;">
+                                        <?php else: ?>
+                                            <div style="width: 100%; height: 120px; background: #ddd; display: flex; align-items: center; justify-content: center; border-radius: 6px;">
+                                                <i class="bi bi-film" style="font-size: 1.8rem; color: #999;"></i>
                                             </div>
+                                        <?php endif; ?>
+                                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s;">
+                                            <i class="bi bi-play-circle" style="font-size: 1.5rem; color: white;"></i>
                                         </div>
-                                        <div style="padding: 0.75rem 0;">
-                                            <small class="text-muted" style="display: block; margin-bottom: 0.25rem;">
-                                                <i class="bi bi-eye"></i> <?php echo number_format($related['views']); ?>
-                                            </small>
-                                            <strong><?php echo htmlspecialchars(substr($related['title'], 0, 50)); ?></strong>
+                                        </div>
+                                        <div>
+                                            <strong style="font-size: 0.9rem; display: block;">
+                                                <?php echo htmlspecialchars(substr($related['title'], 0, 60)); ?>
+                                            </strong>
                                         </div>
                                     </div>
-                                </div>
                             <?php endforeach; ?>
                         </div>
                     </div>
@@ -323,20 +498,42 @@ try {
         function copyToClipboard() {
             const url = window.location.href;
             navigator.clipboard.writeText(url).then(() => {
-                alert('Link copiado para a área de transferência!');
+                alert('✓ Link copiado com sucesso!');
+            }).catch(() => {
+                alert('Copie este link: ' + url);
             });
         }
 
         function shareWhatsApp() {
             const url = window.location.href;
             const text = 'Assista este vídeo: <?php echo htmlspecialchars($video['title']); ?>';
-            window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+            window.open(`https://wa.me/?text=${encodeURIComponent(text + '\n' + url)}`, '_blank');
         }
 
         function shareFacebook() {
             const url = window.location.href;
             window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
         }
+
+        // Melhorias para Mobile
+        document.addEventListener('DOMContentLoaded', function() {
+            // Previne comportamento de zoom ao tocar em inputs
+            const inputs = document.querySelectorAll('input, button, a');
+            inputs.forEach(input => {
+                input.style.touchAction = 'manipulation';
+            });
+
+            // Feedback visual ao tocar em elementos
+            const clickableElements = document.querySelectorAll('.btn, .related-video, button');
+            clickableElements.forEach(el => {
+                el.addEventListener('touchstart', function() {
+                    this.style.opacity = '0.8';
+                });
+                el.addEventListener('touchend', function() {
+                    this.style.opacity = '1';
+                });
+            });
+        });
     </script>
 </body>
 </html>

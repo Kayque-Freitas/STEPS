@@ -214,6 +214,7 @@ $csrf_token = generate_csrf_token();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Dashboard - Sistema de Tutoriais e POP's</title>
+    <link rel="icon" href="/favicon.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
@@ -336,6 +337,250 @@ $csrf_token = generate_csrf_token();
             padding: 0.5rem 1rem;
             border-radius: 20px;
         }
+
+        /* ===== RESPONSIVO PARA CELULARES ===== */
+        @media (max-width: 768px) {
+            /* Navbar */
+            .navbar {
+                padding: 0.75rem 0;
+            }
+            .navbar-brand {
+                font-size: 1.1rem;
+            }
+
+            /* Layout Mobile */
+            .container-fluid {
+                padding: 0;
+            }
+
+            .row {
+                margin: 0;
+            }
+
+            .col-md-3, .col-md-9, .col-md-6 {
+                padding: 0;
+            }
+
+            /* Sidebar Mobile */
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+                min-height: auto;
+                padding: 0.5rem 0;
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            .sidebar .nav {
+                flex-direction: row !important;
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .sidebar .nav-link {
+                padding: 0.75rem 1rem;
+                white-space: nowrap;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+                flex: 1;
+                text-align: center;
+                font-size: 0.9rem;
+            }
+
+            .sidebar .nav-link:hover,
+            .sidebar .nav-link.active {
+                border-left-color: transparent;
+                border-bottom-color: var(--primary-color);
+            }
+
+            /* Conteúdo Principal */
+            .p-4 {
+                padding: 1rem !important;
+            }
+
+            /* Cards */
+            .card {
+                margin-bottom: 1rem;
+                border-radius: 8px;
+            }
+
+            .card-header {
+                padding: 1rem;
+                font-size: 0.95rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            /* Formulários */
+            .form-control, .form-select {
+                padding: 0.75rem;
+                font-size: 1rem;
+                border-radius: 6px;
+            }
+
+            .form-label {
+                font-size: 0.9rem;
+                margin-bottom: 0.4rem;
+            }
+
+            /* Tabelas */
+            .table-responsive {
+                font-size: 0.85rem;
+            }
+
+            .table {
+                margin-bottom: 0;
+            }
+
+            .table th, .table td {
+                padding: 0.6rem 0.5rem;
+            }
+
+            .table .btn-sm {
+                padding: 0.35rem 0.5rem;
+                font-size: 0.75rem;
+                margin: 2px;
+            }
+
+            /* Botões */
+            .btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.95rem;
+                border-radius: 6px;
+                min-height: 44px;
+                min-width: 44px;
+                touch-action: manipulation;
+            }
+
+            .btn-primary, .btn-login {
+                width: 100%;
+            }
+
+            /* Stats Cards */
+            .stat-card {
+                padding: 1.5rem 1rem;
+            }
+
+            .stat-card .stat-number {
+                font-size: 1.75rem;
+            }
+
+            /* Modal */
+            .modal-dialog {
+                margin: 0;
+                max-width: 100%;
+            }
+
+            .modal-content {
+                border-radius: 8px;
+            }
+
+            /* Espaçamento */
+            .mb-4 {
+                margin-bottom: 1.5rem !important;
+            }
+
+            .mb-3 {
+                margin-bottom: 1rem !important;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+                margin-bottom: 1rem;
+            }
+
+            h4 {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Celulares Muito Pequenos (< 480px) */
+        @media (max-width: 480px) {
+            .navbar-brand {
+                font-size: 0.95rem;
+            }
+
+            .navbar {
+                padding: 0.5rem 0;
+            }
+
+            .sidebar .nav-link {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .sidebar .nav-link i {
+                display: block;
+                margin-bottom: 0.3rem;
+                font-size: 1.2rem;
+            }
+
+            .card-header {
+                padding: 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            .card-body {
+                padding: 0.8rem;
+            }
+
+            .p-4 {
+                padding: 0.75rem !important;
+            }
+
+            .table-responsive {
+                font-size: 0.75rem;
+            }
+
+            .table th, .table td {
+                padding: 0.4rem;
+            }
+
+            .btn {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.85rem;
+            }
+
+            .form-control, .form-select {
+                padding: 0.6rem;
+                font-size: 1rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-card .stat-number {
+                font-size: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.1rem;
+            }
+
+            h4 {
+                font-size: 0.95rem;
+            }
+        }
+
+        /* Melhorias de Toque */
+        @media (hover: none) {
+            .btn, .card, .nav-link {
+                -webkit-tap-highlight-color: rgba(102, 126, 234, 0.1);
+            }
+
+            .btn:active {
+                transform: scale(0.98);
+            }
+
+            .form-control:focus, .form-select:focus {
+                outline: 2px solid var(--primary-color);
+                outline-offset: 2px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -361,28 +606,28 @@ $csrf_token = generate_csrf_token();
         </div>
     </nav>
 
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 sidebar">
-                <nav class="nav flex-column">
-                    <a class="nav-link active" href="#dashboard" data-bs-toggle="tab">
-                        <i class="bi bi-speedometer2"></i> Dashboard
+    <div class="container-fluid g-0">
+        <div class="row g-0">
+            <!-- Sidebar Mobile-Friendly -->
+            <div class="col-12 col-md-3 col-lg-2 sidebar">
+                <nav class="nav flex-column flex-md-column flex-row">
+                    <a class="nav-link active flex-fill text-center text-md-start" href="#dashboard" data-bs-toggle="tab">
+                        <i class="bi bi-speedometer2"></i><span class="d-none d-md-inline ms-2">Dashboard</span>
                     </a>
-                    <a class="nav-link" href="#categorias" data-bs-toggle="tab">
-                        <i class="bi bi-folder"></i> Categorias
+                    <a class="nav-link flex-fill text-center text-md-start" href="#categorias" data-bs-toggle="tab">
+                        <i class="bi bi-folder"></i><span class="d-none d-md-inline ms-2">Categorias</span>
                     </a>
-                    <a class="nav-link" href="#videos" data-bs-toggle="tab">
-                        <i class="bi bi-film"></i> Vídeos
+                    <a class="nav-link flex-fill text-center text-md-start" href="#videos" data-bs-toggle="tab">
+                        <i class="bi bi-film"></i><span class="d-none d-md-inline ms-2">Vídeos</span>
                     </a>
-                    <a class="nav-link" href="#auditoria" data-bs-toggle="tab">
-                        <i class="bi bi-clock-history"></i> Auditoria
+                    <a class="nav-link flex-fill text-center text-md-start" href="#auditoria" data-bs-toggle="tab">
+                        <i class="bi bi-clock-history"></i><span class="d-none d-md-inline ms-2">Auditoria</span>
                     </a>
                 </nav>
             </div>
 
             <!-- Conteúdo Principal -->
-            <div class="col-md-9 col-lg-10 p-4">
+            <div class="col-12 col-md-9 col-lg-10 p-2 p-md-4">
                 <!-- Mensagem de Feedback -->
                 <?php if (!empty($message)): ?>
                     <div class="alert alert-<?php echo $messageType; ?> alert-dismissible fade show" role="alert">
@@ -398,22 +643,16 @@ $csrf_token = generate_csrf_token();
                         <h2 class="mb-4">Dashboard</h2>
                         
                         <div class="row mb-4">
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="card stat-card">
                                     <div class="stat-number"><?php echo count($categories); ?></div>
                                     <div class="stat-label">Categorias</div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="card stat-card">
                                     <div class="stat-number"><?php echo count($recentVideos); ?></div>
                                     <div class="stat-label">Vídeos Recentes</div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card stat-card">
-                                    <div class="stat-number"><?php echo array_sum(array_column($recentVideos, 'views')); ?></div>
-                                    <div class="stat-label">Visualizações</div>
                                 </div>
                             </div>
                         </div>
@@ -426,7 +665,6 @@ $csrf_token = generate_csrf_token();
                                         <tr>
                                             <th>Título</th>
                                             <th>Categoria</th>
-                                            <th>Visualizações</th>
                                             <th>Data</th>
                                             <th>Ações</th>
                                         </tr>
@@ -436,7 +674,6 @@ $csrf_token = generate_csrf_token();
                                             <tr>
                                                 <td><?php echo htmlspecialchars($video['title']); ?></td>
                                                 <td><span class="badge bg-primary"><?php echo htmlspecialchars($video['category_name']); ?></span></td>
-                                                <td><?php echo $video['views']; ?></td>
                                                 <td><?php echo date('d/m/Y H:i', strtotime($video['created_at'])); ?></td>
                                                 <td>
                                                     <a href="watch.php?id=<?php echo $video['id']; ?>" class="btn btn-sm btn-info" target="_blank">
@@ -620,7 +857,6 @@ $csrf_token = generate_csrf_token();
                                             <th>Título</th>
                                             <th>Categoria</th>
                                             <th>Tamanho</th>
-                                            <th>Visualizações</th>
                                             <th>Data</th>
                                             <th>Ações</th>
                                         </tr>
@@ -631,7 +867,6 @@ $csrf_token = generate_csrf_token();
                                                 <td><?php echo htmlspecialchars($video['title']); ?></td>
                                                 <td><span class="badge bg-primary"><?php echo htmlspecialchars($video['category_name']); ?></span></td>
                                                 <td><?php echo format_bytes($video['file_size']); ?></td>
-                                                <td><?php echo $video['views']; ?></td>
                                                 <td><?php echo date('d/m/Y', strtotime($video['created_at'])); ?></td>
                                                 <td>
                                                     <a href="watch.php?id=<?php echo $video['id']; ?>" class="btn btn-sm btn-info" target="_blank">
@@ -729,6 +964,7 @@ $csrf_token = generate_csrf_token();
                     if (e.lengthComputable) {
                         const percentComplete = (e.loaded / e.total) * 100;
                         progressBar.style.width = percentComplete + '%';
+                        progressBar.textContent = Math.round(percentComplete) + '%';
                     }
                 });
 
@@ -736,21 +972,21 @@ $csrf_token = generate_csrf_token();
                     if (xhr.status === 200) {
                         const response = JSON.parse(xhr.responseText);
                         if (response.success) {
-                            alert('Vídeo enviado com sucesso!');
+                            alert('✓ Vídeo enviado com sucesso!');
                             document.getElementById('uploadForm').reset();
                             location.reload();
                         } else {
-                            alert('Erro: ' + response.error);
+                            alert('✗ Erro: ' + response.error);
                         }
                     } else {
-                        alert('Erro ao enviar vídeo');
+                        alert('✗ Erro ao enviar vídeo');
                     }
                     uploadBtn.disabled = false;
                     uploadProgress.style.display = 'none';
                 });
 
                 xhr.addEventListener('error', function() {
-                    alert('Erro na conexão');
+                    alert('✗ Erro na conexão');
                     uploadBtn.disabled = false;
                     uploadProgress.style.display = 'none';
                 });
@@ -762,6 +998,58 @@ $csrf_token = generate_csrf_token();
                 uploadBtn.disabled = false;
                 uploadProgress.style.display = 'none';
             }
+        });
+
+        // Melhorias para Mobile
+        document.addEventListener('DOMContentLoaded', function() {
+            // Previne zoom ao tocar em inputs
+            const inputs = document.querySelectorAll('input, select, textarea, button');
+            inputs.forEach(input => {
+                input.style.touchAction = 'manipulation';
+            });
+
+            // Feedback visual ao tocar
+            const clickableElements = document.querySelectorAll('.btn, .nav-link, .card, .table tbody tr');
+            clickableElements.forEach(el => {
+                if (el.tagName !== 'TR') {
+                    el.addEventListener('touchstart', function() {
+                        this.style.opacity = '0.85';
+                        this.style.backgroundColor = 'rgba(102, 126, 234, 0.05)';
+                    });
+                    el.addEventListener('touchend', function() {
+                        this.style.opacity = '1';
+                        this.style.backgroundColor = '';
+                    });
+                }
+            });
+
+            // Melhorar tabelas em mobile
+            if (window.innerWidth < 768) {
+                const tables = document.querySelectorAll('.table');
+                tables.forEach(table => {
+                    table.style.fontSize = '0.85rem';
+                    const ths = table.querySelectorAll('th');
+                    const tds = table.querySelectorAll('td');
+                    
+                    // Adiciona scroll horizontal visível
+                    const wrapper = table.parentElement;
+                    if (wrapper && wrapper.classList.contains('table-responsive')) {
+                        wrapper.style.overscrollBehavior = 'contain';
+                    }
+                });
+            }
+
+            // Previne submissão dupla de formulários
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function() {
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Processando...';
+                    }
+                });
+            });
         });
     </script>
 </body>

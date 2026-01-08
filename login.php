@@ -73,6 +73,7 @@ $csrf_token = generate_csrf_token();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Login - Sistema de Tutoriais e POP's</title>
+    <link rel="icon" href="/favicon.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
@@ -139,6 +140,63 @@ $csrf_token = generate_csrf_token();
             background: transparent;
             border: 1px solid #ddd;
             color: #667eea;
+        }
+
+        /* Responsivo para Celulares */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            .login-container {
+                max-width: 100%;
+                width: 100%;
+            }
+            .card {
+                border-radius: 8px;
+            }
+            .card-header {
+                padding: 1.5rem;
+            }
+            .card-header h4 {
+                font-size: 1.3rem;
+            }
+            .card-header .icon {
+                font-size: 2.5rem;
+            }
+            .card-body {
+                padding: 1.5rem !important;
+            }
+            .form-control, .form-select {
+                padding: 0.85rem;
+                font-size: 1rem;
+                border-radius: 8px;
+            }
+            .form-label {
+                font-size: 0.95rem;
+                margin-bottom: 0.6rem;
+            }
+            .btn-login {
+                padding: 0.9rem;
+                font-size: 1rem;
+                border-radius: 8px;
+            }
+            .mb-3, .mb-4 {
+                margin-bottom: 1rem !important;
+            }
+            input, label {
+                touch-action: manipulation;
+            }
+        }
+
+        /* Melhorias de Toque */
+        @media (hover: none) {
+            .btn-login:active {
+                transform: scale(0.98);
+            }
+            .form-control:focus {
+                outline: 2px solid #667eea;
+                outline-offset: 2px;
+            }
         }
     </style>
 </head>
