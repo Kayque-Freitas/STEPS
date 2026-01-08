@@ -50,7 +50,7 @@ define('DB_NAME', 'sistema');
 
 // Configurações de segurança
 define('SESSION_TIMEOUT', 3600); // 1 hora em segundos
-define('MAX_UPLOAD_SIZE', 500 * 1024 * 1024); // 500 MB
+define('MAX_UPLOAD_SIZE', 800 * 1024 * 1024); // 800 MB
 define('ALLOWED_VIDEO_TYPES', ['video/mp4', 'video/webm', 'video/ogg']);
 define('ALLOWED_IMAGE_TYPES', ['image/jpeg', 'image/png', 'image/gif']);
 

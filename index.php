@@ -589,7 +589,7 @@ $csrf_token = generate_csrf_token();
                                         <div class="col-md-6 mb-3">
                                             <label for="video" class="form-label">Arquivo de Vídeo (MP4, WebM, OGG)</label>
                                             <input type="file" class="form-control" id="video" name="video" accept="video/*" required>
-                                            <small class="text-muted">Máximo 500 MB</small>
+                                            <small class="text-muted">Máximo 800 MB</small>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label for="thumbnail" class="form-label">Thumbnail (Opcional)</label>
