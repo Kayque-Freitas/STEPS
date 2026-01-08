@@ -438,9 +438,6 @@ try {
                         <button class="btn btn-outline-primary" onclick="shareWhatsApp()">
                             <i class="bi bi-whatsapp"></i> Compartilhar no WhatsApp
                         </button>
-                        <button class="btn btn-outline-primary" onclick="shareFacebook()">
-                            <i class="bi bi-facebook"></i> Compartilhar no Facebook
-                        </button>
                     </div>
                 </div>
             </div>
@@ -508,11 +505,6 @@ try {
             const url = window.location.href;
             const text = 'Assista este vídeo: <?php echo htmlspecialchars($video['title']); ?>';
             window.open(`https://wa.me/?text=${encodeURIComponent(text + '\n' + url)}`, '_blank');
-        }
-
-        function shareFacebook() {
-            const url = window.location.href;
-            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
         }
 
         // Melhorias para Mobile
