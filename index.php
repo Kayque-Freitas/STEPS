@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Sistema de Tutoriais e POP's - Dashboard Principal
  * Versão: 3.1 (Neobrutalism Fixed Edition)
@@ -128,6 +129,7 @@ $csrf_token = generate_csrf_token();
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -164,33 +166,45 @@ $csrf_token = generate_csrf_token();
             background-image: radial-gradient(#000 1px, transparent 1px);
             background-size: 20px 20px;
         }
+
         .brutal-card {
             background: white;
             border: 3px solid black;
             box-shadow: 6px 6px 0px 0px #000;
         }
+
         .brutal-btn {
             border: 3px solid black;
             box-shadow: 3px 3px 0px 0px #000;
             transition: all 0.1s;
         }
+
         .brutal-btn:active {
             transform: translate(2px, 2px);
             box-shadow: 1px 1px 0px 0px #000;
         }
+
         .brutal-input {
             border: 3px solid black;
             box-shadow: 3px 3px 0px 0px #000;
         }
+
         .nav-link-brutal.active {
             background-color: #A3E635;
             transform: translate(-2px, -2px);
             box-shadow: 4px 4px 0px 0px #000;
         }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
     </style>
 </head>
+
 <body class="min-h-screen">
     <!-- Navbar -->
     <nav class="bg-white border-b-3 border-black p-4 sticky top-0 z-50">
@@ -226,6 +240,80 @@ $csrf_token = generate_csrf_token();
                     <button onclick="showTab('auditoria')" id="tab-btn-auditoria" class="nav-link-brutal w-full text-left p-4 border-3 border-black font-black uppercase tracking-tight flex items-center whitespace-nowrap">
                         <i class="bi bi-clock-history mr-3"></i> Auditoria
                     </button>
+                    <!-- MINI GAME - CLICK POP RETRO -->
+                    <div class="brutal-card p-6 bg-white max-w-md">
+                        <h3 class="font-black uppercase text-xl mb-4 flex items-center gap-2">
+                            Anti Stress <i class="bi bi-hand-index-thumb mr-2"></i>
+                        </h3>
+
+                        <!-- Pontuação -->
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="font-black uppercase">Pontos:</span>
+                            <span id="score" class="text-3xl font-black">0</span>
+                        </div>
+
+                        <!-- Área do jogo -->
+                        <div
+                            id="gameArea"
+                            class="relative w-full h-48 border-3 border-black bg-brutal-yellow overflow-hidden cursor-pointer">
+                            <div
+                                id="target"
+                                class="absolute w-10 h-10 border-3 border-black bg-accent flex items-center justify-center font-black select-none"
+                                style="top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                                ✦
+                            </div>
+                        </div>
+
+                        <!-- Botões -->
+                        <div class="flex gap-4 mt-4">
+                            <button
+                                id="resetBtn"
+                                class="brutal-btn bg-red-400 px-4 py-2 font-black uppercase text-sm">
+                                Resetar
+                            </button>
+                        </div>
+                    </div>
+
+                    <script>
+                        (function() {
+                            let score = 0;
+                            const scoreEl = document.getElementById('score');
+                            const target = document.getElementById('target');
+                            const gameArea = document.getElementById('gameArea');
+                            const resetBtn = document.getElementById('resetBtn');
+
+                            function randomPosition() {
+                                const areaRect = gameArea.getBoundingClientRect();
+                                const size = 40;
+
+                                const maxX = areaRect.width - size;
+                                const maxY = areaRect.height - size;
+
+                                const x = Math.random() * maxX;
+                                const y = Math.random() * maxY;
+
+                                target.style.left = x + 'px';
+                                target.style.top = y + 'px';
+                                target.style.transform = 'none';
+                            }
+
+                            target.addEventListener('click', function(e) {
+                                e.stopPropagation();
+                                score++;
+                                scoreEl.textContent = score;
+                                randomPosition();
+                            });
+
+                            resetBtn.addEventListener('click', function() {
+                                score = 0;
+                                scoreEl.textContent = score;
+                                target.style.top = '50%';
+                                target.style.left = '50%';
+                                target.style.transform = 'translate(-50%, -50%)';
+                            });
+                        })();
+                    </script>
+
                 </div>
             </div>
 
@@ -240,7 +328,7 @@ $csrf_token = generate_csrf_token();
                 <!-- Dashboard Tab -->
                 <div id="tab-dashboard" class="tab-content active space-y-8">
                     <h2 class="text-4xl font-black uppercase tracking-tighter italic">Dashboard</h2>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="brutal-card p-6 bg-brutal-yellow">
                             <div class="text-5xl font-black"><?php echo count($categories); ?></div>
@@ -266,7 +354,9 @@ $csrf_token = generate_csrf_token();
                                 </thead>
                                 <tbody class="divide-y-2 divide-black">
                                     <?php if (empty($recentVideos)): ?>
-                                        <tr><td colspan="4" class="p-8 text-center font-bold italic text-gray-500">Nenhum vídeo encontrado.</td></tr>
+                                        <tr>
+                                            <td colspan="4" class="p-8 text-center font-bold italic text-gray-500">Nenhum vídeo encontrado.</td>
+                                        </tr>
                                     <?php endif; ?>
                                     <?php foreach ($recentVideos as $video): ?>
                                         <tr class="hover:bg-main/10">
@@ -331,7 +421,9 @@ $csrf_token = generate_csrf_token();
                                 </thead>
                                 <tbody class="divide-y-2 divide-black">
                                     <?php if (empty($categories)): ?>
-                                        <tr><td colspan="4" class="p-8 text-center font-bold italic text-gray-500">Nenhuma categoria criada.</td></tr>
+                                        <tr>
+                                            <td colspan="4" class="p-8 text-center font-bold italic text-gray-500">Nenhuma categoria criada.</td>
+                                        </tr>
                                     <?php endif; ?>
                                     <?php foreach ($categories as $category): ?>
                                         <tr class="hover:bg-main/10">
@@ -410,37 +502,37 @@ $csrf_token = generate_csrf_token();
                             <?php endif;
                             foreach ($allVideos as $v):
                             ?>
-                            <div class="brutal-card bg-white overflow-hidden flex flex-col">
-                                <div class="aspect-video bg-black relative">
-                                    <?php if ($v['thumbnail']): ?>
-                                        <img src="thumbs/<?php echo $v['thumbnail']; ?>" class="w-full h-full object-cover">
-                                    <?php else: ?>
-                                        <div class="w-full h-full flex items-center justify-center text-white opacity-20">
-                                            <i class="bi bi-film text-5xl"></i>
+                                <div class="brutal-card bg-white overflow-hidden flex flex-col">
+                                    <div class="aspect-video bg-black relative">
+                                        <?php if ($v['thumbnail']): ?>
+                                            <img src="thumbs/<?php echo $v['thumbnail']; ?>" class="w-full h-full object-cover">
+                                        <?php else: ?>
+                                            <div class="w-full h-full flex items-center justify-center text-white opacity-20">
+                                                <i class="bi bi-film text-5xl"></i>
+                                            </div>
+                                        <?php endif; ?>
+                                        <div class="absolute top-2 left-2">
+                                            <span class="bg-main border-2 border-black px-2 py-1 text-[10px] font-black uppercase">
+                                                <?php echo htmlspecialchars($v['category_name']); ?>
+                                            </span>
                                         </div>
-                                    <?php endif; ?>
-                                    <div class="absolute top-2 left-2">
-                                        <span class="bg-main border-2 border-black px-2 py-1 text-[10px] font-black uppercase">
-                                            <?php echo htmlspecialchars($v['category_name']); ?>
-                                        </span>
+                                    </div>
+                                    <div class="p-4 flex-grow">
+                                        <h4 class="font-black uppercase text-sm mb-2 line-clamp-2"><?php echo htmlspecialchars($v['title']); ?></h4>
+                                        <div class="text-[10px] font-bold text-gray-500 mb-4">
+                                            <?php echo date('d/m/Y H:i', strtotime($v['created_at'])); ?>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <a href="watch.php?id=<?php echo $v['id']; ?>" class="brutal-btn bg-brutal-blue flex-grow text-center py-2 font-black text-xs uppercase" target="_blank">Assistir</a>
+                                            <form method="post" onsubmit="return confirm('Deletar vídeo?')">
+                                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                                                <input type="hidden" name="action" value="delete_video">
+                                                <input type="hidden" name="video_id" value="<?php echo $v['id']; ?>">
+                                                <button type="submit" class="brutal-btn bg-red-400 p-2"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="p-4 flex-grow">
-                                    <h4 class="font-black uppercase text-sm mb-2 line-clamp-2"><?php echo htmlspecialchars($v['title']); ?></h4>
-                                    <div class="text-[10px] font-bold text-gray-500 mb-4">
-                                        <?php echo date('d/m/Y H:i', strtotime($v['created_at'])); ?>
-                                    </div>
-                                    <div class="flex space-x-2">
-                                        <a href="watch.php?id=<?php echo $v['id']; ?>" class="brutal-btn bg-brutal-blue flex-grow text-center py-2 font-black text-xs uppercase" target="_blank">Assistir</a>
-                                        <form method="post" onsubmit="return confirm('Deletar vídeo?')">
-                                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
-                                            <input type="hidden" name="action" value="delete_video">
-                                            <input type="hidden" name="video_id" value="<?php echo $v['id']; ?>">
-                                            <button type="submit" class="brutal-btn bg-red-400 p-2"><i class="bi bi-trash"></i></button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
                             <?php endforeach; ?>
                         </div>
                     </div>
@@ -487,9 +579,11 @@ $csrf_token = generate_csrf_token();
                                             <td class="p-4 text-sm font-bold"><?php echo htmlspecialchars($log['description']); ?></td>
                                             <td class="p-4 text-xs font-bold"><?php echo date('d/m/Y H:i', strtotime($log['created_at'])); ?></td>
                                         </tr>
-                                    <?php endwhile; 
+                                    <?php endwhile;
                                     if (!$logsFound): ?>
-                                        <tr><td colspan="4" class="p-8 text-center font-bold italic text-gray-500">Nenhum log registrado.</td></tr>
+                                        <tr>
+                                            <td colspan="4" class="p-8 text-center font-bold italic text-gray-500">Nenhum log registrado.</td>
+                                        </tr>
                                     <?php endif; ?>
                                 </tbody>
                             </table>
@@ -524,11 +618,14 @@ $csrf_token = generate_csrf_token();
         function showTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-link-brutal').forEach(b => b.classList.remove('active'));
-            
+
             document.getElementById('tab-' + tabId).classList.add('active');
             document.getElementById('tab-btn-' + tabId).classList.add('active');
-            
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         }
 
         function openRenameModal(id, name) {
@@ -569,16 +666,17 @@ $csrf_token = generate_csrf_token();
                             alert('Sucesso!');
                             location.reload();
                         } else alert('Erro: ' + res.error);
-                    } catch(e) {
+                    } catch (e) {
                         alert('Erro ao processar resposta do servidor');
                     }
                 } else alert('Erro no servidor');
                 uploadBtn.disabled = false;
             };
-            
+
             xhr.open('POST', 'api/upload_video.php');
             xhr.send(formData);
         });
     </script>
 </body>
+
 </html>
