@@ -75,8 +75,8 @@ class Database {
 
     private function __construct() {
         try {
-            $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
-            $this->pdo = new PDO($dsn, DB_USER, DB_PASS);
+$dsn = 'sqlite:' . DATA_DIR . 'sistema.sqlite';
+	            $this->pdo = new PDO($dsn);
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->initializeTables();
         } catch (PDOException $e) {
@@ -99,30 +99,30 @@ class Database {
         // Tabela de usuários
         $this->pdo->exec("
             CREATE TABLE IF NOT EXISTS users (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username VARCHAR(150) UNIQUE NOT NULL,
                 password VARCHAR(255) NOT NULL,
                 email VARCHAR(255),
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 last_login DATETIME
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            ) 
         ");
 
         // Tabela de categorias
         $this->pdo->exec("
             CREATE TABLE IF NOT EXISTS categories (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name VARCHAR(150) UNIQUE NOT NULL,
                 description TEXT,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            ) 
         ");
 
         // Tabela de vídeos
         $this->pdo->exec("
             CREATE TABLE IF NOT EXISTS videos (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 category_id INT NOT NULL,
                 title VARCHAR(255) NOT NULL,
                 filename VARCHAR(255) NOT NULL,
@@ -132,15 +132,15 @@ class Database {
                 file_size INT,
                 views INT DEFAULT 0,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            ) 
         ");
 
         // Tabela de logs de auditoria
         $this->pdo->exec("
             CREATE TABLE IF NOT EXISTS audit_logs (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INT,
                 action VARCHAR(255) NOT NULL,
                 description TEXT,
@@ -148,7 +148,7 @@ class Database {
                 user_agent TEXT,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES users(id)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            ) 
         ");
 
         // Inserir usuário padrão se não existir

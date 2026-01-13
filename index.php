@@ -1,7 +1,7 @@
 <?php
 /**
  * Sistema de Tutoriais e POP's - Dashboard Principal
- * Versão: 3.0 (Neobrutalism Edition)
+ * Versão: 3.1 (Neobrutalism Fixed Edition)
  */
 
 require_once 'config.php';
@@ -210,29 +210,29 @@ $csrf_token = generate_csrf_token();
     </nav>
 
     <div class="container mx-auto p-4 md:p-8">
-        <div class="flex flex-col md:flex-row gap-8">
+        <div class="flex flex-col md:flex-row gap-8 items-start">
             <!-- Sidebar -->
             <div class="w-full md:w-64 flex-shrink-0">
-                <div class="flex flex-row md:flex-column overflow-x-auto md:overflow-x-visible space-x-2 md:space-x-0 md:space-y-4 pb-4 md:pb-0">
-                    <button onclick="showTab('dashboard')" id="tab-btn-dashboard" class="nav-link-brutal active w-full text-left p-4 border-3 border-black font-black uppercase tracking-tight flex items-center">
+                <div class="flex flex-row md:flex-col overflow-x-auto md:overflow-x-visible space-x-2 md:space-x-0 md:space-y-4 pb-4 md:pb-0">
+                    <button onclick="showTab('dashboard')" id="tab-btn-dashboard" class="nav-link-brutal active w-full text-left p-4 border-3 border-black font-black uppercase tracking-tight flex items-center whitespace-nowrap">
                         <i class="bi bi-speedometer2 mr-3"></i> Dashboard
                     </button>
-                    <button onclick="showTab('categorias')" id="tab-btn-categorias" class="nav-link-brutal w-full text-left p-4 border-3 border-black font-black uppercase tracking-tight flex items-center">
+                    <button onclick="showTab('categorias')" id="tab-btn-categorias" class="nav-link-brutal w-full text-left p-4 border-3 border-black font-black uppercase tracking-tight flex items-center whitespace-nowrap">
                         <i class="bi bi-folder mr-3"></i> Categorias
                     </button>
-                    <button onclick="showTab('videos')" id="tab-btn-videos" class="nav-link-brutal w-full text-left p-4 border-3 border-black font-black uppercase tracking-tight flex items-center">
+                    <button onclick="showTab('videos')" id="tab-btn-videos" class="nav-link-brutal w-full text-left p-4 border-3 border-black font-black uppercase tracking-tight flex items-center whitespace-nowrap">
                         <i class="bi bi-film mr-3"></i> Vídeos
                     </button>
-                    <button onclick="showTab('auditoria')" id="tab-btn-auditoria" class="nav-link-brutal w-full text-left p-4 border-3 border-black font-black uppercase tracking-tight flex items-center">
+                    <button onclick="showTab('auditoria')" id="tab-btn-auditoria" class="nav-link-brutal w-full text-left p-4 border-3 border-black font-black uppercase tracking-tight flex items-center whitespace-nowrap">
                         <i class="bi bi-clock-history mr-3"></i> Auditoria
                     </button>
                 </div>
             </div>
 
             <!-- Main Content -->
-            <div class="flex-grow">
+            <div class="flex-grow w-full">
                 <?php if (!empty($message)): ?>
-                    <div class="bg-<?php echo $messageType === 'danger' ? 'red' : ($messageType === 'success' ? 'main' : 'brutal-blue'); ?> border-3 border-black p-4 mb-8 shadow-brutal font-black uppercase">
+                    <div class="bg-<?php echo $messageType === 'danger' ? 'red-400' : ($messageType === 'success' ? 'main' : 'brutal-blue'); ?> border-3 border-black p-4 mb-8 shadow-brutal font-black uppercase">
                         <i class="bi bi-info-circle mr-2"></i> <?php echo htmlspecialchars($message); ?>
                     </div>
                 <?php endif; ?>
@@ -265,6 +265,9 @@ $csrf_token = generate_csrf_token();
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y-2 divide-black">
+                                    <?php if (empty($recentVideos)): ?>
+                                        <tr><td colspan="4" class="p-8 text-center font-bold italic text-gray-500">Nenhum vídeo encontrado.</td></tr>
+                                    <?php endif; ?>
                                     <?php foreach ($recentVideos as $video): ?>
                                         <tr class="hover:bg-main/10">
                                             <td class="p-4 font-bold"><?php echo htmlspecialchars($video['title']); ?></td>
@@ -327,6 +330,9 @@ $csrf_token = generate_csrf_token();
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y-2 divide-black">
+                                    <?php if (empty($categories)): ?>
+                                        <tr><td colspan="4" class="p-8 text-center font-bold italic text-gray-500">Nenhuma categoria criada.</td></tr>
+                                    <?php endif; ?>
                                     <?php foreach ($categories as $category): ?>
                                         <tr class="hover:bg-main/10">
                                             <td class="p-4 font-bold">#<?php echo $category['id']; ?></td>
@@ -396,10 +402,12 @@ $csrf_token = generate_csrf_token();
                     <div class="brutal-card overflow-hidden">
                         <div class="bg-black text-white p-4 font-black uppercase">Todos os Vídeos</div>
                         <div id="videosList" class="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <!-- Carregado via JS ou PHP -->
                             <?php
                             $allVideosStmt = $pdo->query('SELECT v.*, c.name as category_name FROM videos v JOIN categories c ON v.category_id = c.id ORDER BY v.created_at DESC');
                             $allVideos = $allVideosStmt->fetchAll(PDO::FETCH_ASSOC);
+                            if (empty($allVideos)): ?>
+                                <div class="col-span-full p-8 text-center font-bold italic text-gray-500">Nenhum vídeo enviado ainda.</div>
+                            <?php endif;
                             foreach ($allVideos as $v):
                             ?>
                             <div class="brutal-card bg-white overflow-hidden flex flex-col">
@@ -465,7 +473,9 @@ $csrf_token = generate_csrf_token();
                                 <tbody class="divide-y-2 divide-black">
                                     <?php
                                     $auditStmt = $pdo->query('SELECT al.*, u.username FROM audit_logs al LEFT JOIN users u ON al.user_id = u.id ORDER BY al.created_at DESC LIMIT 50');
+                                    $logsFound = false;
                                     while ($log = $auditStmt->fetch(PDO::FETCH_ASSOC)):
+                                        $logsFound = true;
                                     ?>
                                         <tr class="hover:bg-main/10">
                                             <td class="p-4 font-bold"><?php echo htmlspecialchars($log['username'] ?? 'Sistema'); ?></td>
@@ -477,7 +487,10 @@ $csrf_token = generate_csrf_token();
                                             <td class="p-4 text-sm font-bold"><?php echo htmlspecialchars($log['description']); ?></td>
                                             <td class="p-4 text-xs font-bold"><?php echo date('d/m/Y H:i', strtotime($log['created_at'])); ?></td>
                                         </tr>
-                                    <?php endwhile; ?>
+                                    <?php endwhile; 
+                                    if (!$logsFound): ?>
+                                        <tr><td colspan="4" class="p-8 text-center font-bold italic text-gray-500">Nenhum log registrado.</td></tr>
+                                    <?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -487,7 +500,7 @@ $csrf_token = generate_csrf_token();
         </div>
     </div>
 
-    <!-- Rename Modal (Simple Implementation) -->
+    <!-- Rename Modal -->
     <div id="renameModal" class="fixed inset-0 bg-black/50 z-[100] hidden flex items-center justify-center p-4">
         <div class="brutal-card bg-white w-full max-w-md p-6">
             <h3 class="text-xl font-black uppercase mb-4">Renomear Categoria</h3>
@@ -550,11 +563,15 @@ $csrf_token = generate_csrf_token();
 
             xhr.onload = () => {
                 if (xhr.status === 200) {
-                    const res = JSON.parse(xhr.responseText);
-                    if (res.success) {
-                        alert('Sucesso!');
-                        location.reload();
-                    } else alert('Erro: ' + res.error);
+                    try {
+                        const res = JSON.parse(xhr.responseText);
+                        if (res.success) {
+                            alert('Sucesso!');
+                            location.reload();
+                        } else alert('Erro: ' + res.error);
+                    } catch(e) {
+                        alert('Erro ao processar resposta do servidor');
+                    }
                 } else alert('Erro no servidor');
                 uploadBtn.disabled = false;
             };
