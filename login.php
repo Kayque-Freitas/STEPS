@@ -127,7 +127,8 @@ $csrf_token = generate_csrf_token();
                 <div class="inline-block p-4 bg-main border-3 border-black shadow-brutal mb-4">
                     <i class="bi bi-play-circle text-4xl"></i>
                 </div>
-                <h1 class="text-3xl font-black uppercase tracking-tighter">STEPS</h1>
+                <h1 class="text-3xl font-black uppercase tracking-tighter">S.T.E.P.S</h1>
+                <h5 class="text-1xl font-black lowercase tracking-tighter">Sistema de Tutoriais e POP's</h5>
                 <p class="font-bold text-gray-600">Acesso Administrativo</p>
             </div>
 
